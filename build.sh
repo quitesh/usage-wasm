@@ -6,14 +6,15 @@ cd "$(dirname "$0")"
 # Initialize submodule if needed
 git submodule update --init
 
-# Apply patches (idempotent — reset first)
-git -C usage checkout -- .
-for patch in patches/*.patch; do
-  [ -f "$patch" ] && git -C usage apply "../$patch"
-done
+# Ensure rustup-managed toolchain is used (Homebrew cargo lacks wasm32 target)
+if command -v rustup &>/dev/null; then
+  CARGO="rustup run stable cargo"
+else
+  CARGO="cargo"
+fi
 
 # Build WASM
-cargo build --release --target wasm32-unknown-unknown
+$CARGO build --release --target wasm32-unknown-unknown
 
 # Run wasm-bindgen
 wasm-bindgen \
