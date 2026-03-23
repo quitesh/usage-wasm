@@ -3,8 +3,11 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-# Initialize submodule if needed
+# Initialize submodule and apply patches
 git submodule update --init
+for patch in patches/*.patch; do
+  git -C usage apply --check "../$patch" 2>/dev/null && git -C usage apply "../$patch"
+done
 
 # Ensure rustup-managed toolchain is used (Homebrew cargo lacks wasm32 target)
 if command -v rustup &>/dev/null; then
