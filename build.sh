@@ -19,13 +19,13 @@ $CARGO build --release --target wasm32-unknown-unknown
 # Run wasm-bindgen
 wasm-bindgen \
   --target web \
-  --out-dir pkg/dist \
+  --out-dir dist \
   target/wasm32-unknown-unknown/release/usage_wasm.wasm
 
 # Copy wasm binary to package root for ?url imports
-cp pkg/dist/usage_wasm_bg.wasm pkg/
+cp dist/usage_wasm_bg.wasm .
 
 # Remove wasm-bindgen generated .gitignore
-rm -f pkg/dist/.gitignore
+rm -f dist/.gitignore
 
-echo "Build complete. Output in pkg/"
+echo "Build complete. Output in dist/"
