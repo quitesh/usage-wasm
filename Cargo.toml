@@ -1,0 +1,23 @@
+[package]
+name = "usage-wasm"
+version = "0.1.0"
+edition = "2021"
+description = "jdx/usage spec parser compiled to WebAssembly"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+usage-lib = { path = "usage/lib", default-features = false }
+wasm-bindgen = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+
+[patch.crates-io]
+xx = { path = "xx-stub" }
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true

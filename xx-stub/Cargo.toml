@@ -1,0 +1,10 @@
+[package]
+name = "xx"
+version = "2.0.0"
+edition = "2021"
+description = "Minimal stub of the xx crate for wasm32 targets"
+
+[dependencies]
+miette = "7"
+thiserror = "2"
+regex = "1"

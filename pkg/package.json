@@ -1,0 +1,24 @@
+{
+  "name": "@aspect-build/usage-wasm",
+  "version": "0.1.0",
+  "description": "jdx/usage spec parser compiled to WebAssembly",
+  "license": "MIT",
+  "type": "module",
+  "module": "./dist/usage_wasm.js",
+  "types": "./dist/usage_wasm.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/usage_wasm.d.ts",
+      "import": "./dist/usage_wasm.js"
+    },
+    "./usage_wasm_bg.wasm": "./usage_wasm_bg.wasm"
+  },
+  "files": [
+    "dist",
+    "usage_wasm_bg.wasm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quitesh/usage-wasm.git"
+  }
+}

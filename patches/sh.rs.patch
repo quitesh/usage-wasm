@@ -1,0 +1,69 @@
+--- a/lib/src/sh.rs
++++ b/lib/src/sh.rs
+@@ -1,25 +1,50 @@
+-use std::process::Command;
+-use xx::process::check_status;
+ use xx::{XXError, XXResult};
+
+ pub(crate) fn sh(script: &str) -> XXResult<String> {
+     #[cfg(unix)]
+-    let (shell, flag) = ("sh", "-c");
++    {
++        use std::process::Command;
++        use xx::process::check_status;
+
++        let (shell, flag) = ("sh", "-c");
++        let output = Command::new(shell)
++            .arg(flag)
++            .arg(script)
++            .stdin(std::process::Stdio::null())
++            .stderr(std::process::Stdio::inherit())
++            .env("__USAGE", env!("CARGO_PKG_VERSION"))
++            .output()
++            .map_err(|err| XXError::ProcessError(err, format!("{shell} {flag} {script}")))?;
++        check_status(output.status)
++            .map_err(|err| XXError::ProcessError(err, format!("{shell} {flag} {script}")))?;
++        let stdout = String::from_utf8(output.stdout).expect("stdout is not utf-8");
++        Ok(stdout)
++    }
++
+     #[cfg(windows)]
+-    let (shell, flag) = ("cmd", "/c");
++    {
++        use std::process::Command;
++        use xx::process::check_status;
+
+-    let output = Command::new(shell)
+-        .arg(flag)
+-        .arg(script)
+-        .stdin(std::process::Stdio::null())
+-        .stderr(std::process::Stdio::inherit())
+-        .env("__USAGE", env!("CARGO_PKG_VERSION"))
+-        .output()
+-        .map_err(|err| XXError::ProcessError(err, format!("{shell} {flag} {script}")))?;
++        let (shell, flag) = ("cmd", "/c");
++        let output = Command::new(shell)
++            .arg(flag)
++            .arg(script)
++            .stdin(std::process::Stdio::null())
++            .stderr(std::process::Stdio::inherit())
++            .env("__USAGE", env!("CARGO_PKG_VERSION"))
++            .output()
++            .map_err(|err| XXError::ProcessError(err, format!("{shell} {flag} {script}")))?;
++        check_status(output.status)
++            .map_err(|err| XXError::ProcessError(err, format!("{shell} {flag} {script}")))?;
++        let stdout = String::from_utf8(output.stdout).expect("stdout is not utf-8");
++        Ok(stdout)
++    }
+
+-    check_status(output.status)
+-        .map_err(|err| XXError::ProcessError(err, format!("{shell} {flag} {script}")))?;
+-    let stdout = String::from_utf8(output.stdout).expect("stdout is not utf-8");
+-    Ok(stdout)
++    #[cfg(not(any(unix, windows)))]
++    {
++        Err(XXError::Error(format!(
++            "shell execution not supported on this platform: {script}"
++        )))
++    }
+ }
